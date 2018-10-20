@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 using namespace std;
 
@@ -19,6 +19,7 @@ vector<double> movingAverage1(const vector<double>& A, int M) {
 	return ret;
 }
 
+// 선형 시간에 이동 평균 구하기
 vector<double> movingAverage2(const vector<double>& A, int M) {
 	vector<double> ret;
 	int N = A.size();
