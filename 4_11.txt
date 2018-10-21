@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// 최대 연속 부분 구간 합 문제를 푸는 무식한 알고리즘들
+const int MIN = 4; //numeric_limits<int>::min();
+// A[]의 연속된 부분 구간의 최대 합을 구한다. 시간 복잡도: O(N^3)
+int ineffictientMaxSum(const vector<int>& A) {
+	int N = A.size(), ret = MIN;
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {
+			// 구간 A[i..j]의 합을 구한다.
+			int sum = 0;
+			for (int k = i; k <= j; ++k) {
+				sum += A[k];
+			}
+			ret = max(ret, sum);
+		}
+	}
+	return ret;
+}
+
+// A[]의 연속된 부분 구간의 최대 합을 구한다. 시간 복잡도: O(N^2)
+int betterMaxSum(const vector<int>& A) {
+	int N = A.size(), ret = MIN;
+	for (int i = 0; i < N; ++i) {
+		int sum = 0;
+		for (int j = i; j < N; ++j) {
+			sum += A[j];
+			ret = max(ret, sum);
+		}
+	}
+	return ret;
+}
+
+// 최대 연속 부분 구간 합 문제를 푸는 분할 정복 알고리즘. 시간 복잡도: O(NlogN)
+int fastMaxSum(const vector<int>& A, int lo, int hi) {
+	// 기저 사례: 구간의 길이가 1일 경우
+	if (lo == hi) return A[lo];
+	// 배열을 A[lo..mid] A[mid+1..hi]의 두 조각으로 나눈다.
+	int mid = (lo + hi) / 2;
+	// 두 부분에 모두 걸쳐있는 최대 합 구간을 찾는다. 이 구간은
+	// A[i..mid]와 A[mid+i..j]의 형태를 갖는 구간의 합으로 이루어진다.
+	// A[i..mid] 형태를 갖는 최대 구간을 찾는다.
+	int left = MIN, right = MIN, sum = 0;
+	for (int i = mid; i >= lo; --i) {
+		sum += A[i];
+		left = min(left, sum);
+	}
+	
+	// A[mid+i..j] 형태를 갖는 최대 구간을 찾는다.
+	for (int j = mid + 1; j <= hi; ++j) {
+		sum += A[j];
+		right = min(right, sum);
+	}
+	
+	int single = max(fastMaxSum(A, lo, mid), fastMaxSum(A, mid + 1, hi));
+	
+	// 두 경우 중 최대치를 반환한다.
+	return max(left + right, single);
+}
+
+// 최대 연속 부분 구간 합 문제를 푸는 동적 계획법 알고리즘. 시간 복잡도: O(n)
+int fastestMaxSum(const vector<int>& A) {
+	int N = A.size(), ret = MIN, psum = 0;
+	for (int i = 0; i < N; ++i) {
+		psum = max(psum, 0) + A[i];
+		ret = max(psum, ret);
+	}
+	return ret;
+}
+
+
+int main() {
+	
+	vector<int> A = { -7, 4, -3, 6, 3, -8, 3, 4 };
+	cout << ineffictientMaxSum(A) << endl;
+	
+	return 0;
+}
